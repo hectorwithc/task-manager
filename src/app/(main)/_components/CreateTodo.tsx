@@ -66,7 +66,12 @@ export default function CreateTodo({
             <FormItem>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder="Whats your todo?" {...field} data-lpignore="true" data-1p-ignore />
+                <Input
+                  placeholder="Whats your todo?"
+                  {...field}
+                  data-lpignore="true"
+                  data-1p-ignore
+                />
               </FormControl>
               <FormDescription>This is the name of your todo</FormDescription>
               <FormMessage />
