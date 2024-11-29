@@ -8,7 +8,7 @@ export const env = createEnv({
    */
   server: {
     DATABASE_URL: z.string().url(),
-    CLERK_SECRET_KEY: z.string(), // e.g. your-secret-key
+    CLERK_SECRET_KEY: z.string().refine((s) => s.startsWith("sk_")), // e.g. your-secret-key
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -21,7 +21,9 @@ export const env = createEnv({
    */
   client: {
     // NEXT_PUBLIC_CLIENTVAR: z.string(),
-    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(), // e.g. your-publishable-key
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z
+      .string()
+      .refine((s) => s.startsWith("pk_")), // e.g. your-publishable-key
     NEXT_PUBLIC_CLERK_SIGN_IN_URL: z.string(), // e.g. /sign-in
     NEXT_PUBLIC_CLERK_SIGN_UP_URL: z.string(), // e.g. /sign-up
   },
@@ -35,7 +37,8 @@ export const env = createEnv({
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
     NODE_ENV: process.env.NODE_ENV,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
-    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
+      process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     NEXT_PUBLIC_CLERK_SIGN_IN_URL: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL,
     NEXT_PUBLIC_CLERK_SIGN_UP_URL: process.env.NEXT_PUBLIC_CLERK_SIGN_UP_URL,
   },

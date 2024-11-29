@@ -1,11 +1,10 @@
-import { Button } from "~/components/ui/button";
-import { APP_NAME } from "~/lib/appConfig";
+import AllTodos from "./_components/AllTodos";
 
 export default function Page() {
   return (
     <main>
-      <h1>{APP_NAME}</h1>
-      <Button>Hello World</Button>
+      <h1>All todos</h1>
+      <AllTodos />
     </main>
   );
 }
