@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
@@ -30,7 +30,11 @@ export const todoRouter = createTRPCRouter({
   deleteTodo: protectedProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.delete(todos).where(eq(todos.id, input.id));
+      await ctx.db
+        .delete(todos)
+        .where(
+          and(eq(todos.id, input.id), eq(todos.authorId, ctx.auth.userId)),
+        );
 
       return { deleted: true };
     }),
@@ -47,7 +51,9 @@ export const todoRouter = createTRPCRouter({
       await ctx.db
         .update(todos)
         .set({ name: input.name, description: input.description })
-        .where(eq(todos.id, input.id));
+        .where(
+          and(eq(todos.id, input.id), eq(todos.authorId, ctx.auth.userId)),
+        );
 
       return { updated: true };
     }),
