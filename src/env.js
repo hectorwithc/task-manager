@@ -22,8 +22,8 @@ export const env = createEnv({
   client: {
     // NEXT_PUBLIC_CLIENTVAR: z.string(),
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(), // e.g. your-publishable-key
-    NEXT_PUBLIC_CLERK_SIGN_IN_URL: z.string().url(), // e.g. /sign-in
-    NEXT_PUBLIC_CLERK_SIGN_UP_URL: z.string().url(), // e.g. /sign-up
+    NEXT_PUBLIC_CLERK_SIGN_IN_URL: z.string(), // e.g. /sign-in
+    NEXT_PUBLIC_CLERK_SIGN_UP_URL: z.string(), // e.g. /sign-up
   },
 
   /**

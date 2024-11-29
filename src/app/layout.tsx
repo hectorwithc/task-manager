@@ -18,12 +18,16 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <ClerkProvider appearance={{
-      baseTheme: [dark],
-    }}>
+    <ClerkProvider
+      appearance={{
+        baseTheme: [dark],
+      }}
+    >
       <html lang="en" className={`${GeistSans.variable} dark`}>
         <body>
-          <TRPCReactProvider>{children}</TRPCReactProvider>
+          <TRPCReactProvider>
+            {children}
+          </TRPCReactProvider>
         </body>
       </html>
     </ClerkProvider>
