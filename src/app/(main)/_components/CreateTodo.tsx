@@ -15,6 +15,7 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
+import { Textarea } from "~/components/ui/textarea";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -85,7 +86,8 @@ export default function CreateTodo({
             <FormItem>
               <FormLabel>Description (optional)</FormLabel>
               <FormControl>
-                <Input placeholder="Explain your todo" {...field} />
+                {/* <Input placeholder="Explain your todo" {...field} /> */}
+                <Textarea placeholder="Explain your todo" {...field} />
               </FormControl>
               <FormDescription>
                 This is the description of your todo
