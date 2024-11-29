@@ -14,10 +14,10 @@ export default async function Navbar() {
           <AppLogo />
         </Link>
         <Link href={"/"}>
-          <Button variant={"link"}>Todos</Button>
+          <Button size={"sm"} variant={"link"}>Todos</Button>
         </Link>
         <Link href={"/settings"}>
-          <Button variant={"link"}>Settings</Button>
+          <Button size={"sm"} variant={"link"}>Settings</Button>
         </Link>
       </div>
       {session.userId ? (
