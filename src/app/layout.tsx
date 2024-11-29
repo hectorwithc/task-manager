@@ -7,6 +7,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import { TRPCReactProvider } from "~/trpc/react";
 import { APP_NAME } from "~/lib/appConfig";
+import { Toaster } from "~/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: `${APP_NAME}`,
@@ -25,7 +26,10 @@ export default function RootLayout({
     >
       <html lang="en" className={`${GeistSans.variable} dark`}>
         <body>
-          <TRPCReactProvider>{children}</TRPCReactProvider>
+          <TRPCReactProvider>
+            {children}
+            <Toaster />
+          </TRPCReactProvider>
         </body>
       </html>
     </ClerkProvider>

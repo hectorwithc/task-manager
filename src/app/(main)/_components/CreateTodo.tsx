@@ -16,6 +16,7 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -50,6 +51,12 @@ export default function CreateTodo({
     onSuccess: () => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       todos.refetch();
+
+      toast.success("Todo created", {
+        description: "Todo created successfully",
+        richColors: true,
+      });
+
       closeDialog();
     },
   });
