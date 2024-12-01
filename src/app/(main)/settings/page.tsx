@@ -10,7 +10,7 @@ import {
 
 export default function Page() {
   return (
-    <div>
+    <div className="px-2 md:px-0">
       <Card>
         <CardHeader>
           <CardTitle>Settings</CardTitle>
