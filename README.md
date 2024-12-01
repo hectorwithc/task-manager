@@ -13,7 +13,7 @@ An online task manager.
 4. Start development server: `$ pnpm dev`
 
 ## Deploy
-Deployed on vercel. (insert-deployment-link-here)
+Deployed on vercel. ([task-manager.thrivingstudios.dev](https://task-manager.thrivingstudios.dev/))
 
 ## Contribute
 Submit a pull request or make a commit if you have write access.
