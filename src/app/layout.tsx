@@ -9,6 +9,7 @@ import { TRPCReactProvider } from "~/trpc/react";
 import { APP_LOGO_NAME } from "~/lib/appConfig";
 import { Toaster } from "~/components/ui/sonner";
 import { ThemeProvider } from "~/components/themes/theme-provider";
+import { CSPostHogProvider } from "./_analytics/provider";
 
 export const metadata: Metadata = {
   title: `${APP_LOGO_NAME}`,
@@ -25,25 +26,27 @@ export default function RootLayout({
         baseTheme: [dark],
       }}
     >
-      <html
-        lang="en"
-        className={`${GeistSans.variable} dark`}
-        suppressHydrationWarning
-      >
-        <body>
-          <TRPCReactProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="dark"
-              enableSystem
-              disableTransitionOnChange
-            >
-              {children}
-              <Toaster />
-            </ThemeProvider>
-          </TRPCReactProvider>
-        </body>
-      </html>
+      <CSPostHogProvider>
+        <html
+          lang="en"
+          className={`${GeistSans.variable} dark`}
+          suppressHydrationWarning
+        >
+          <body>
+            <TRPCReactProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="dark"
+                enableSystem
+                disableTransitionOnChange
+              >
+                {children}
+                <Toaster />
+              </ThemeProvider>
+            </TRPCReactProvider>
+          </body>
+        </html>
+      </CSPostHogProvider>
     </ClerkProvider>
   );
 }

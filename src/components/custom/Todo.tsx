@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Archive, ArchiveRestore, Trash, Trash2, X } from "lucide-react";
 import { type TodoCategoryType } from "~/app/(main)/_components/TodoList";
+import posthog from "posthog-js";
 
 export default function Todo({
   todo,
@@ -47,6 +48,8 @@ export default function Todo({
           description: "Todo marked as completed",
           richColors: true,
         });
+
+        posthog.capture("todo-completed", { id: todo.id });
       } else {
         onUnComplete();
 
@@ -54,6 +57,8 @@ export default function Todo({
           description: "Todo marked as uncompleted",
           richColors: true,
         });
+
+        posthog.capture("todo-uncompleted", { id: todo.id });
       }
     },
   });
@@ -70,6 +75,8 @@ export default function Todo({
           description: "Todo marked as archived",
           richColors: true,
         });
+
+        posthog.capture("todo-archived", { id: todo.id });
       } else {
         onUnArchive();
 
@@ -77,6 +84,8 @@ export default function Todo({
           description: "Todo marked as unarchived",
           richColors: true,
         });
+
+        posthog.capture("todo-unarchived", { id: todo.id });
       }
     },
   });
@@ -93,6 +102,8 @@ export default function Todo({
           description: "Todo moved to trash",
           richColors: true,
         });
+
+        posthog.capture("todo-removed", { id: todo.id });
       } else {
         onUnRemove();
 
@@ -100,6 +111,8 @@ export default function Todo({
           description: "Todo moved from trash",
           richColors: true,
         });
+
+        posthog.capture("todo-unremoved", { id: todo.id });
       }
     },
   });
@@ -112,6 +125,8 @@ export default function Todo({
         description: "Todo has been deleted",
         richColors: true,
       });
+
+      posthog.capture("todo-deleted", { id: todo.id });
     },
   });
 

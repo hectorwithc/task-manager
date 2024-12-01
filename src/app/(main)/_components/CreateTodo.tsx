@@ -26,6 +26,7 @@ import { useState } from "react";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
 import { toast } from "sonner";
+import posthog from "posthog-js";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -65,6 +66,8 @@ export default function CreateTodo({
         description: "Todo created successfully",
         richColors: true,
       });
+
+      posthog.capture("todo-created");
 
       setIsOpen(false);
     },
