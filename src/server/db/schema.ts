@@ -54,7 +54,7 @@ export const todos = createTable(
     id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
     name: varchar("name", { length: 256 }).notNull(),
     description: varchar("description", { length: 2048 }),
-    isComplete: boolean("is_complete").notNull().default(false),
+    isCompleted: boolean("is_completed").notNull().default(false),
     todoState: todoStateEnum("todo_state").notNull().default("DEFAULT"),
     authorId: varchar("author_id", { length: 256 }).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true })

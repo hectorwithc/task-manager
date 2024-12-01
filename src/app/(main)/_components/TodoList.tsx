@@ -36,9 +36,21 @@ export default function TodoList({ type }: { type: TodoCategoryType }) {
     InferSelectModel<typeof todosSchema>[] | undefined
   >([]);
 
+  const countTodos = api.todo.countTodos.useQuery();
+
+  const [allTodosCount, setAllTodosCount] = useState(0);
+  const [uncompletedTodosCount, setUncompletedTodosCount] = useState(0);
+  const [completedTodosCount, setCompletedTodosCount] = useState(0);
+
   useEffect(() => {
     setTodosData(todos.data);
   }, [todos.data]);
+
+  useEffect(() => {
+    setAllTodosCount(countTodos.data?.all[0]?.count ?? 0);
+    setUncompletedTodosCount(countTodos.data?.uncompleted[0]?.count ?? 0);
+    setCompletedTodosCount(countTodos.data?.completed[0]?.count ?? 0);
+  }, [countTodos.data]);
 
   function selectTodo(input: TodoCategoryType) {
     window.location.href = `/?type=${input}`;
@@ -54,26 +66,31 @@ export default function TodoList({ type }: { type: TodoCategoryType }) {
     <div>
       <div className="flex justify-between">
         <div className="mx-2 md:mx-0 md:hidden">
-          <TodoListDropdownMenu todoCategoryType={type} />
+          <TodoListDropdownMenu
+            todoCategoryType={type}
+            allTodosCount={allTodosCount}
+            uncompletedTodosCount={uncompletedTodosCount}
+            completedTodosCount={completedTodosCount}
+          />
         </div>
         <div className="hidden space-x-1 md:flex">
           <Button
             variant={type === "all" ? "secondary" : "ghost"}
             onClick={() => selectTodo("all")}
           >
-            All
+            All ({allTodosCount})
           </Button>
           <Button
             variant={type === "uncompleted" ? "secondary" : "ghost"}
             onClick={() => selectTodo("uncompleted")}
           >
-            Uncompleted
+            Uncompleted ({uncompletedTodosCount})
           </Button>
           <Button
             variant={type === "completed" ? "secondary" : "ghost"}
             onClick={() => selectTodo("completed")}
           >
-            Completed
+            Completed ({completedTodosCount})
           </Button>
           <Button
             variant={type === "archived" ? "secondary" : "ghost"}
@@ -101,27 +118,65 @@ export default function TodoList({ type }: { type: TodoCategoryType }) {
                   todo={todo}
                   todoCategoryType={type}
                   onComplete={() => {
+                    setCompletedTodosCount(completedTodosCount + 1);
+                    setUncompletedTodosCount(uncompletedTodosCount - 1);
+
                     if (type !== "uncompleted") return;
 
                     removeTodoFromList(todo.id);
                   }}
                   onUnComplete={() => {
+                    setUncompletedTodosCount(uncompletedTodosCount + 1);
+                    setCompletedTodosCount(completedTodosCount - 1);
+
                     if (type !== "completed") return;
 
                     removeTodoFromList(todo.id);
                   }}
                   onArchive={() => {
+                    setAllTodosCount(allTodosCount - 1);
+
+                    if (todo.isCompleted) {
+                      setCompletedTodosCount(completedTodosCount - 1);
+                    } else {
+                      setUncompletedTodosCount(uncompletedTodosCount - 1);
+                    }
+
                     removeTodoFromList(todo.id);
                   }}
                   onUnArchive={() => {
+                    setAllTodosCount(allTodosCount + 1);
+
+                    if (todo.isCompleted) {
+                      setCompletedTodosCount(completedTodosCount + 1);
+                    } else {
+                      setUncompletedTodosCount(uncompletedTodosCount + 1);
+                    }
+
                     if (type !== "archived") return;
 
                     removeTodoFromList(todo.id);
                   }}
                   onRemove={() => {
+                    setAllTodosCount(allTodosCount - 1);
+
+                    if (todo.isCompleted) {
+                      setCompletedTodosCount(completedTodosCount - 1);
+                    } else {
+                      setUncompletedTodosCount(uncompletedTodosCount - 1);
+                    }
+
                     removeTodoFromList(todo.id);
                   }}
                   onUnRemove={() => {
+                    setAllTodosCount(allTodosCount + 1);
+
+                    if (todo.isCompleted) {
+                      setCompletedTodosCount(completedTodosCount + 1);
+                    } else {
+                      setUncompletedTodosCount(uncompletedTodosCount + 1);
+                    }
+
                     if (type !== "deleted") return;
 
                     removeTodoFromList(todo.id);

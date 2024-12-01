@@ -31,13 +31,13 @@ export default function Todo({
   onUnRemove: () => void;
   onDelete: () => void;
 }) {
-  const [isComplete, setIsComplete] = useState(todo.isComplete);
+  const [isCompleted, setisCompleted] = useState(todo.isCompleted);
   const [isArchived, setIsArchived] = useState(todo.todoState === "ARCHIVED");
   const [isRemoved, setIsRemoved] = useState(todo.todoState === "DELETED");
 
   const completeTodo = api.todo.completeTodo.useMutation({
-    onMutate: ({ isComplete }) => {
-      setIsComplete(isComplete);
+    onMutate: ({ isCompleted }) => {
+      setisCompleted(isCompleted);
     },
     onSuccess: ({ completed }) => {
       if (completed) {
@@ -118,19 +118,19 @@ export default function Todo({
   return (
     <div className="flex items-center space-x-2 rounded-md border-2 px-3 py-2">
       <Checkbox
-        checked={isComplete}
+        checked={isCompleted}
         className="ml-1 mr-2 h-5 w-5 rounded-none"
         onCheckedChange={(checked) => {
           completeTodo.mutate({
             id: todo.id,
-            isComplete: checked.valueOf() as boolean,
+            isCompleted: checked.valueOf() as boolean,
           });
         }}
       />
       <div className="flex w-full flex-col">
         <p
           className="text-xl"
-          style={{ textDecoration: isComplete ? "line-through" : "none" }}
+          style={{ textDecoration: isCompleted ? "line-through" : "none" }}
         >
           {todo.name}
         </p>

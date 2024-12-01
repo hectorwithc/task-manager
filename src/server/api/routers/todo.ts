@@ -1,4 +1,5 @@
-import { and, desc, eq } from "drizzle-orm";
+import { TRPCError } from "@trpc/server";
+import { and, count, desc, eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
@@ -35,7 +36,7 @@ export const todoRouter = createTRPCRouter({
           where: (model, { eq, and }) =>
             and(
               eq(model.authorId, ctx.auth.userId),
-              eq(model.isComplete, false),
+              eq(model.isCompleted, false),
               eq(model.todoState, "DEFAULT"),
             ),
           orderBy: (model) => desc(model.createdAt),
@@ -45,7 +46,7 @@ export const todoRouter = createTRPCRouter({
           where: (model, { eq, and }) =>
             and(
               eq(model.authorId, ctx.auth.userId),
-              eq(model.isComplete, true),
+              eq(model.isCompleted, true),
               eq(model.todoState, "DEFAULT"),
             ),
           orderBy: (model) => desc(model.createdAt),
@@ -100,16 +101,16 @@ export const todoRouter = createTRPCRouter({
     }),
 
   completeTodo: protectedProcedure
-    .input(z.object({ id: z.number(), isComplete: z.boolean() }))
+    .input(z.object({ id: z.number(), isCompleted: z.boolean() }))
     .mutation(async ({ ctx, input }) => {
       await ctx.db
         .update(todos)
-        .set({ isComplete: input.isComplete })
+        .set({ isCompleted: input.isCompleted })
         .where(
           and(eq(todos.id, input.id), eq(todos.authorId, ctx.auth.userId)),
         );
 
-      return { completed: input.isComplete };
+      return { completed: input.isCompleted };
     }),
 
   archiveTodo: protectedProcedure
@@ -155,6 +156,46 @@ export const todoRouter = createTRPCRouter({
 
       return { removed: input.isRemoved };
     }),
+
+  countTodos: protectedProcedure.query(async ({ ctx }) => {
+    const allTodosCount = await ctx.db
+      .select({ count: count() })
+      .from(todos)
+      .where(
+        and(
+          eq(todos.todoState, "DEFAULT"),
+          eq(todos.authorId, ctx.auth.userId),
+        ),
+      );
+
+    const uncompletedTodosCount = await ctx.db
+      .select({ count: count() })
+      .from(todos)
+      .where(
+        and(
+          eq(todos.todoState, "DEFAULT"),
+          eq(todos.authorId, ctx.auth.userId),
+          eq(todos.isCompleted, false),
+        ),
+      );
+
+    const completedTodosCount = await ctx.db
+      .select({ count: count() })
+      .from(todos)
+      .where(
+        and(
+          eq(todos.todoState, "DEFAULT"),
+          eq(todos.authorId, ctx.auth.userId),
+          eq(todos.isCompleted, true),
+        ),
+      );
+
+    return {
+      all: allTodosCount,
+      uncompleted: uncompletedTodosCount,
+      completed: completedTodosCount,
+    };
+  }),
 
   updateTodo: protectedProcedure
     .input(

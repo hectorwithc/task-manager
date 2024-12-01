@@ -16,8 +16,14 @@ import { type TodoCategoryType } from "./TodoList";
 
 export function TodoListDropdownMenu({
   todoCategoryType,
+  allTodosCount,
+  uncompletedTodosCount,
+  completedTodosCount,
 }: {
   todoCategoryType: TodoCategoryType;
+  allTodosCount: number;
+  uncompletedTodosCount: number;
+  completedTodosCount: number;
 }) {
   const [position, setPosition] = React.useState(todoCategoryType.toString());
 
@@ -37,19 +43,19 @@ export function TodoListDropdownMenu({
         <DropdownMenuSeparator />
         <DropdownMenuRadioGroup value={position} onValueChange={setPosition}>
           <DropdownMenuRadioItem value="all" onClick={() => selectTodo("all")}>
-            All
+            All ({allTodosCount})
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem
             value="uncompleted"
             onClick={() => selectTodo("uncompleted")}
           >
-            Uncompleted
+            Uncompleted ({uncompletedTodosCount})
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem
             value="completed"
             onClick={() => selectTodo("completed")}
           >
-            Completed
+            Completed ({completedTodosCount})
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem
             value="archived"
