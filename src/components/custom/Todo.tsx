@@ -9,8 +9,12 @@ import { toast } from "sonner";
 
 export default function Todo({
   todo,
+  onComplete,
+  onUnComplete,
 }: {
   todo: InferSelectModel<typeof todos>;
+  onComplete: () => void;
+  onUnComplete: () => void;
 }) {
   const [isComplete, setIsComplete] = useState(todo.isComplete);
 
@@ -20,11 +24,15 @@ export default function Todo({
     },
     onSuccess: ({ completed }) => {
       if (completed) {
+        onComplete();
+
         toast.success("Todo completed", {
           description: "Todo marked as completed",
           richColors: true,
         });
       } else {
+        onUnComplete();
+
         toast.success("Todo uncompleted", {
           description: "Todo marked as uncompleted",
           richColors: true,

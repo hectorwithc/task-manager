@@ -5,14 +5,71 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { todos } from "~/server/db/schema";
 
 export const todoRouter = createTRPCRouter({
-  getTodos: protectedProcedure.query(async ({ ctx }) => {
-    const todos = await ctx.db.query.todos.findMany({
-      where: (model, { eq }) => eq(model.authorId, ctx.auth.userId),
-      orderBy: (model) => desc(model.createdAt),
-    });
+  getTodos: protectedProcedure
+    .input(
+      z.object({
+        type: z.enum([
+          "all",
+          "uncompleted",
+          "completed",
+          "archived",
+          "deleted",
+        ]),
+        limit: z.number().optional(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      let todos;
 
-    return todos;
-  }),
+      if (input.type === "all") {
+        todos = await ctx.db.query.todos.findMany({
+          where: (model, { eq, and }) =>
+            and(
+              eq(model.authorId, ctx.auth.userId),
+              eq(model.todoState, "DEFAULT"),
+            ),
+          orderBy: (model) => desc(model.createdAt),
+        });
+      } else if (input.type === "uncompleted") {
+        todos = await ctx.db.query.todos.findMany({
+          where: (model, { eq, and }) =>
+            and(
+              eq(model.authorId, ctx.auth.userId),
+              eq(model.isComplete, false),
+            ),
+          orderBy: (model) => desc(model.createdAt),
+        });
+      } else if (input.type === "completed") {
+        todos = await ctx.db.query.todos.findMany({
+          where: (model, { eq, and }) =>
+            and(
+              eq(model.authorId, ctx.auth.userId),
+              eq(model.isComplete, true),
+            ),
+          orderBy: (model) => desc(model.createdAt),
+        });
+      } else if (input.type === "archived") {
+        todos = await ctx.db.query.todos.findMany({
+          where: (model, { eq, and }) =>
+            and(
+              eq(model.authorId, ctx.auth.userId),
+              eq(model.todoState, "ARCHIVED"),
+            ),
+          orderBy: (model) => desc(model.createdAt),
+        });
+      } else if (input.type === "deleted") {
+        todos = await ctx.db.query.todos.findMany({
+          where: (model, { eq, and }) =>
+            and(
+              eq(model.authorId, ctx.auth.userId),
+              eq(model.todoState, "DELETED"),
+            ),
+          orderBy: (model) => desc(model.createdAt),
+        });
+      }
+
+      return todos;
+    }),
 
   createTodo: protectedProcedure
     .input(

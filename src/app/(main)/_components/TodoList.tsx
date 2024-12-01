@@ -1,53 +1,116 @@
 "use client";
 
-import { api } from "~/trpc/react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "~/components/ui/dialog";
-import CreateTodo from "./CreateTodo";
-import { Button } from "~/components/ui/button";
-import { useState } from "react";
-import Todo from "~/components/custom/Todo";
 import { Skeleton } from "~/components/ui/skeleton";
+import Todo from "~/components/custom/Todo";
+import CreateTodo from "./CreateTodo";
+import { api } from "~/trpc/react";
+import { Button } from "~/components/ui/button";
+import { type todos as todosSchema } from "~/server/db/schema";
+import { type InferSelectModel } from "drizzle-orm";
+import { useEffect, useState } from "react";
 
-export default function TodoList() {
-  const [isOpen, setIsOpen] = useState(false);
+export type TodoCategoryType =
+  | "all"
+  | "uncompleted"
+  | "completed"
+  | "archived"
+  | "deleted";
 
-  const todos = api.todo.getTodos.useQuery();
+export function toTodoCategoryType(input: string): TodoCategoryType {
+  const validCategories: TodoCategoryType[] = [
+    "all",
+    "uncompleted",
+    "completed",
+    "archived",
+    "deleted",
+  ];
+  return validCategories.includes(input as TodoCategoryType)
+    ? (input as TodoCategoryType)
+    : "all";
+}
+
+export default function TodoList({ type }: { type: TodoCategoryType }) {
+  const todos = api.todo.getTodos.useQuery({ type: type });
+  const [todosData, setTodosData] = useState<
+    InferSelectModel<typeof todosSchema>[] | undefined
+  >([]);
+
+  useEffect(() => {
+    setTodosData(todos.data);
+  }, [todos.data]);
+
+  function selectTodo(input: TodoCategoryType) {
+    window.location.href = `/?type=${input}`;
+  }
+
+  function removeTodoFromList(id: number) {
+    if (!(type === "completed" || type === "uncompleted")) return;
+
+    const updatedTodos = todosData?.filter((todo) => todo.id !== id);
+
+    setTodosData(updatedTodos);
+  }
 
   return (
     <div>
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogTrigger asChild>
-          <Button>New Todo</Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Create Todo</DialogTitle>
-            <DialogDescription>Add a new todo to your list</DialogDescription>
-            <CreateTodo
-              todos={todos}
-              closeDialog={() => {
-                setIsOpen(false);
-              }}
-              className="w-full pt-4"
-            />
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
+      <div className="flex justify-between">
+        <div className="flex space-x-1">
+          <Button
+            variant={type === "all" ? "secondary" : "ghost"}
+            onClick={() => selectTodo("all")}
+          >
+            All
+          </Button>
+          <Button
+            variant={type === "uncompleted" ? "secondary" : "ghost"}
+            onClick={() => selectTodo("uncompleted")}
+          >
+            Uncompleted
+          </Button>
+          <Button
+            variant={type === "completed" ? "secondary" : "ghost"}
+            onClick={() => selectTodo("completed")}
+          >
+            Completed
+          </Button>
+          <Button
+            variant={type === "archived" ? "secondary" : "ghost"}
+            onClick={() => selectTodo("archived")}
+          >
+            Archived
+          </Button>
+          <Button
+            variant={type === "deleted" ? "secondary" : "ghost"}
+            onClick={() => selectTodo("deleted")}
+          >
+            Deleted
+          </Button>
+        </div>
+        <CreateTodo todos={todos} />
+      </div>
       <div className="mt-4">
         {!todos.isLoading ? (
           <div className="flex flex-col space-y-2">
-            {todos.data?.map((todo) => (
+            {todosData?.map((todo) => (
               <div key={todo.id}>
-                <Todo todo={todo} />
+                <Todo
+                  todo={todo}
+                  onComplete={() => {
+                    removeTodoFromList(todo.id);
+                  }}
+                  onUnComplete={() => {
+                    removeTodoFromList(todo.id);
+                  }}
+                />
               </div>
             ))}
+            {todosData?.length == 0 && (
+              <div className="mt-4">
+                <p className="text-center text-muted-foreground">
+                  No todos added yet...
+                </p>
+              </div>
+            )}
           </div>
         ) : (
           <div className="flex flex-col space-y-6">
@@ -55,8 +118,8 @@ export default function TodoList() {
               <div key={index} className="flex space-x-2">
                 <Skeleton className="h-8 w-8 rounded-md" />
                 <div className="w-full space-y-1">
-                  <Skeleton className="h-6 w-[450px]" />
-                  <Skeleton className="h-4 w-[400px]" />
+                  <Skeleton className="h-6 w-full" />
+                  <Skeleton className="h-4 w-11/12" />
                 </div>
               </div>
             ))}
