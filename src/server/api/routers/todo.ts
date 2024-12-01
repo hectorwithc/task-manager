@@ -36,6 +36,7 @@ export const todoRouter = createTRPCRouter({
             and(
               eq(model.authorId, ctx.auth.userId),
               eq(model.isComplete, false),
+              eq(model.todoState, "DEFAULT"),
             ),
           orderBy: (model) => desc(model.createdAt),
         });
@@ -45,6 +46,7 @@ export const todoRouter = createTRPCRouter({
             and(
               eq(model.authorId, ctx.auth.userId),
               eq(model.isComplete, true),
+              eq(model.todoState, "DEFAULT"),
             ),
           orderBy: (model) => desc(model.createdAt),
         });
@@ -108,6 +110,28 @@ export const todoRouter = createTRPCRouter({
         );
 
       return { completed: input.isComplete };
+    }),
+
+  archiveTodo: protectedProcedure
+    .input(z.object({ id: z.number(), isArchived: z.boolean() }))
+    .mutation(async ({ ctx, input }) => {
+      if (input.isArchived) {
+        await ctx.db
+        .update(todos)
+        .set({ todoState: "ARCHIVED" })
+        .where(
+          and(eq(todos.id, input.id), eq(todos.authorId, ctx.auth.userId)),
+        );
+      } else {
+        await ctx.db
+          .update(todos)
+          .set({ todoState: "DEFAULT" })
+          .where(
+            and(eq(todos.id, input.id), eq(todos.authorId, ctx.auth.userId)),
+          );
+      }
+
+      return { archived: input.isArchived };
     }),
 
   updateTodo: protectedProcedure

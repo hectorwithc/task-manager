@@ -44,8 +44,6 @@ export default function TodoList({ type }: { type: TodoCategoryType }) {
   }
 
   function removeTodoFromList(id: number) {
-    if (!(type === "completed" || type === "uncompleted")) return;
-
     const updatedTodos = todosData?.filter((todo) => todo.id !== id);
 
     setTodosData(updatedTodos);
@@ -96,9 +94,21 @@ export default function TodoList({ type }: { type: TodoCategoryType }) {
                 <Todo
                   todo={todo}
                   onComplete={() => {
+                    if (type !== "uncompleted") return;
+
                     removeTodoFromList(todo.id);
                   }}
                   onUnComplete={() => {
+                    if (type !== "completed") return;
+
+                    removeTodoFromList(todo.id);
+                  }}
+                  onArchive={() => {
+                    removeTodoFromList(todo.id);
+                  }}
+                  onUnArchive={() => {
+                    if (type !== "archived") return;
+
                     removeTodoFromList(todo.id);
                   }}
                 />

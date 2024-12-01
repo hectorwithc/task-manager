@@ -6,17 +6,24 @@ import { Checkbox } from "~/components/ui/checkbox";
 import { useState } from "react";
 import { api } from "~/trpc/react";
 import { toast } from "sonner";
+import { Button } from "../ui/button";
+import { Archive, ArchiveRestore } from "lucide-react";
 
 export default function Todo({
   todo,
   onComplete,
   onUnComplete,
+  onArchive,
+  onUnArchive,
 }: {
   todo: InferSelectModel<typeof todos>;
   onComplete: () => void;
   onUnComplete: () => void;
+  onArchive: () => void;
+  onUnArchive: () => void;
 }) {
   const [isComplete, setIsComplete] = useState(todo.isComplete);
+  const [isArchived, setIsArchived] = useState(todo.todoState === "ARCHIVED");
 
   const completeTodo = api.todo.completeTodo.useMutation({
     onMutate: ({ isComplete }) => {
@@ -41,6 +48,29 @@ export default function Todo({
     },
   });
 
+  const archiveTodo = api.todo.archiveTodo.useMutation({
+    onMutate: ({ isArchived }) => {
+      setIsArchived(isArchived);
+    },
+    onSuccess: ({ archived }) => {
+      if (archived) {
+        onArchive();
+
+        toast.success("Todo archived", {
+          description: "Todo marked as archived",
+          richColors: true,
+        });
+      } else {
+        onUnArchive();
+
+        toast.success("Todo unarchived", {
+          description: "Todo marked as unarchived",
+          richColors: true,
+        });
+      }
+    }
+  })
+
   return (
     <div className="flex items-center space-x-2 rounded-md border-2 px-3 py-2">
       <Checkbox
@@ -52,7 +82,7 @@ export default function Todo({
           });
         }}
       />
-      <div className="flex flex-col">
+      <div className="flex flex-col w-full">
         <p
           className="text-xl"
           style={{ textDecoration: isComplete ? "line-through" : "none" }}
@@ -60,6 +90,18 @@ export default function Todo({
           {todo.name}
         </p>
         <p className="text-muted-foreground">{todo.description}</p>
+      </div>
+      <div>
+        <Button onClick={() => { archiveTodo.mutate({
+          id: todo.id,
+          isArchived: !isArchived
+        }) }} size={"icon"} variant={(isArchived ? "secondary": "ghost")}>
+          {isArchived ?
+            <ArchiveRestore />
+            :
+            <Archive />
+          }
+        </Button>
       </div>
     </div>
   );
