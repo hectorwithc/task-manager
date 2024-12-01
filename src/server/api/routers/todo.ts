@@ -134,6 +134,28 @@ export const todoRouter = createTRPCRouter({
       return { archived: input.isArchived };
     }),
 
+  removeTodo: protectedProcedure
+    .input(z.object({ id: z.number(), isRemoved: z.boolean() }))
+    .mutation(async ({ ctx, input }) => {
+      if (input.isRemoved) {
+        await ctx.db
+          .update(todos)
+          .set({ todoState: "DELETED" })
+          .where(
+            and(eq(todos.id, input.id), eq(todos.authorId, ctx.auth.userId)),
+          );
+      } else {
+        await ctx.db
+          .update(todos)
+          .set({ todoState: "DEFAULT" })
+          .where(
+            and(eq(todos.id, input.id), eq(todos.authorId, ctx.auth.userId)),
+          );
+      }
+
+      return { removed: input.isRemoved };
+    }),
+
   updateTodo: protectedProcedure
     .input(
       z.object({

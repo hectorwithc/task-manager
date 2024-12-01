@@ -93,6 +93,7 @@ export default function TodoList({ type }: { type: TodoCategoryType }) {
               <div key={todo.id}>
                 <Todo
                   todo={todo}
+                  todoCategoryType={type}
                   onComplete={() => {
                     if (type !== "uncompleted") return;
 
@@ -109,6 +110,17 @@ export default function TodoList({ type }: { type: TodoCategoryType }) {
                   onUnArchive={() => {
                     if (type !== "archived") return;
 
+                    removeTodoFromList(todo.id);
+                  }}
+                  onRemove={() => {
+                    removeTodoFromList(todo.id);
+                  }}
+                  onUnRemove={() => {
+                    if (type !== "deleted") return;
+
+                    removeTodoFromList(todo.id);
+                  }}
+                  onDelete={() => {
                     removeTodoFromList(todo.id);
                   }}
                 />
