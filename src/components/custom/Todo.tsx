@@ -90,14 +90,14 @@ export default function Todo({
         onRemove();
 
         toast.success("Todo deleted", {
-          description: "Todo marked as deleted",
+          description: "Todo moved to trash",
           richColors: true,
         });
       } else {
         onUnRemove();
 
         toast.success("Todo undeleted", {
-          description: "Todo marked has been undeleted",
+          description: "Todo moved from trash",
           richColors: true,
         });
       }
