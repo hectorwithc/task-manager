@@ -117,11 +117,11 @@ export const todoRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       if (input.isArchived) {
         await ctx.db
-        .update(todos)
-        .set({ todoState: "ARCHIVED" })
-        .where(
-          and(eq(todos.id, input.id), eq(todos.authorId, ctx.auth.userId)),
-        );
+          .update(todos)
+          .set({ todoState: "ARCHIVED" })
+          .where(
+            and(eq(todos.id, input.id), eq(todos.authorId, ctx.auth.userId)),
+          );
       } else {
         await ctx.db
           .update(todos)

@@ -68,8 +68,8 @@ export default function Todo({
           richColors: true,
         });
       }
-    }
-  })
+    },
+  });
 
   return (
     <div className="flex items-center space-x-2 rounded-md border-2 px-3 py-2">
@@ -82,7 +82,7 @@ export default function Todo({
           });
         }}
       />
-      <div className="flex flex-col w-full">
+      <div className="flex w-full flex-col">
         <p
           className="text-xl"
           style={{ textDecoration: isComplete ? "line-through" : "none" }}
@@ -92,15 +92,17 @@ export default function Todo({
         <p className="text-muted-foreground">{todo.description}</p>
       </div>
       <div>
-        <Button onClick={() => { archiveTodo.mutate({
-          id: todo.id,
-          isArchived: !isArchived
-        }) }} size={"icon"} variant={(isArchived ? "secondary": "ghost")}>
-          {isArchived ?
-            <ArchiveRestore />
-            :
-            <Archive />
-          }
+        <Button
+          onClick={() => {
+            archiveTodo.mutate({
+              id: todo.id,
+              isArchived: !isArchived,
+            });
+          }}
+          size={"icon"}
+          variant={isArchived ? "secondary" : "ghost"}
+        >
+          {isArchived ? <ArchiveRestore /> : <Archive />}
         </Button>
       </div>
     </div>
