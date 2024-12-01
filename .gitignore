@@ -44,5 +44,9 @@ yarn-error.log*
 
 # idea files
 .idea
+
+# Drizzle database
+drizzle
+
 # Sentry Config File
 .env.sentry-build-plugin
