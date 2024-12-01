@@ -7,7 +7,7 @@ import { useState } from "react";
 import { api } from "~/trpc/react";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
-import { Archive, ArchiveRestore, Trash, Trash2 } from "lucide-react";
+import { Archive, ArchiveRestore, Trash, Trash2, X } from "lucide-react";
 import { type TodoCategoryType } from "~/app/(main)/_components/TodoList";
 
 export default function Todo({
@@ -119,6 +119,7 @@ export default function Todo({
     <div className="flex items-center space-x-2 rounded-md border-2 px-3 py-2">
       <Checkbox
         checked={isComplete}
+        className="ml-1 mr-2 h-5 w-5 rounded-none"
         onCheckedChange={(checked) => {
           completeTodo.mutate({
             id: todo.id,
@@ -136,43 +137,59 @@ export default function Todo({
         <p className="text-muted-foreground">{todo.description}</p>
       </div>
       <div className="flex items-center justify-center space-x-1">
-        <Button
-          onClick={() => {
-            archiveTodo.mutate({
-              id: todo.id,
-              isArchived: !isArchived,
-            });
-          }}
-          size={"icon"}
-          variant={isArchived ? "secondary" : "ghost"}
-        >
-          {isArchived ? <ArchiveRestore /> : <Archive />}
-        </Button>
         {todoCategoryType !== "deleted" ? (
-          <Button
-            onClick={() => {
-              removeTodo.mutate({
-                id: todo.id,
-                isRemoved: !isRemoved,
-              });
-            }}
-            size={"icon"}
-            variant={isRemoved ? "secondary" : "ghost"}
-          >
-            {isRemoved ? <Trash2 /> : <Trash />}
-          </Button>
+          <>
+            <Button
+              onClick={() => {
+                archiveTodo.mutate({
+                  id: todo.id,
+                  isArchived: !isArchived,
+                });
+              }}
+              size={"icon"}
+              variant={isArchived ? "secondary" : "ghost"}
+            >
+              {isArchived ? <ArchiveRestore /> : <Archive />}
+            </Button>
+            <Button
+              onClick={() => {
+                removeTodo.mutate({
+                  id: todo.id,
+                  isRemoved: !isRemoved,
+                });
+              }}
+              size={"icon"}
+              variant={isRemoved ? "secondary" : "ghost"}
+            >
+              {isRemoved ? <Trash2 /> : <Trash />}
+            </Button>
+          </>
         ) : (
-          <Button
-            onClick={() => {
-              deleteTodo.mutate({
-                id: todo.id,
-              });
-            }}
-            size={"icon"}
-            variant={"ghost"}
-          >
-            <Trash2 />
-          </Button>
+          <>
+            <Button
+              onClick={() => {
+                removeTodo.mutate({
+                  id: todo.id,
+                  isRemoved: !isRemoved,
+                });
+              }}
+              size={"icon"}
+              variant={"ghost"}
+            >
+              <X />
+            </Button>
+            <Button
+              onClick={() => {
+                deleteTodo.mutate({
+                  id: todo.id,
+                });
+              }}
+              size={"icon"}
+              variant={"ghost"}
+            >
+              <Trash2 />
+            </Button>
+          </>
         )}
       </div>
     </div>

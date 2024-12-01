@@ -8,6 +8,7 @@ import { Button } from "~/components/ui/button";
 import { type todos as todosSchema } from "~/server/db/schema";
 import { type InferSelectModel } from "drizzle-orm";
 import { useEffect, useState } from "react";
+import { TodoListDropdownMenu } from "./TodoListDropdownMenu";
 
 export type TodoCategoryType =
   | "all"
@@ -52,7 +53,10 @@ export default function TodoList({ type }: { type: TodoCategoryType }) {
   return (
     <div>
       <div className="flex justify-between">
-        <div className="flex space-x-1">
+        <div className="mx-2 md:mx-0 md:hidden">
+          <TodoListDropdownMenu todoCategoryType={type} />
+        </div>
+        <div className="hidden space-x-1 md:flex">
           <Button
             variant={type === "all" ? "secondary" : "ghost"}
             onClick={() => selectTodo("all")}
@@ -84,11 +88,13 @@ export default function TodoList({ type }: { type: TodoCategoryType }) {
             Deleted
           </Button>
         </div>
-        <CreateTodo todos={todos} />
+        <div className="mx-2 md:mx-0">
+          <CreateTodo todos={todos} />
+        </div>
       </div>
       <div className="mt-4">
         {!todos.isLoading ? (
-          <div className="flex flex-col space-y-2">
+          <div className="mx-2 flex flex-col space-y-2 md:mx-0">
             {todosData?.map((todo) => (
               <div key={todo.id}>
                 <Todo
@@ -135,7 +141,7 @@ export default function TodoList({ type }: { type: TodoCategoryType }) {
             )}
           </div>
         ) : (
-          <div className="flex flex-col space-y-6">
+          <div className="mx-2 flex flex-col space-y-6 md:mx-0">
             {Array.from({ length: 5 }).map((_, index) => (
               <div key={index} className="flex space-x-2">
                 <Skeleton className="h-8 w-8 rounded-md" />
