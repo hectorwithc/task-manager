@@ -28,6 +28,8 @@ export function TodoListDropdownMenu({
   const [position, setPosition] = React.useState(todoCategoryType.toString());
 
   function selectTodo(input: TodoCategoryType) {
+    if (input === todoCategoryType) return;
+
     window.location.href = `/?type=${input}`;
   }
 

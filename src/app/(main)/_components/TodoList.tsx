@@ -53,6 +53,8 @@ export default function TodoList({ type }: { type: TodoCategoryType }) {
   }, [countTodos.data]);
 
   function selectTodo(input: TodoCategoryType) {
+    if (input === type) return;
+
     window.location.href = `/?type=${input}`;
   }
 
