@@ -79,6 +79,12 @@ export default function Todo({
         posthog.capture("todo-uncompleted", { id: todo.id });
       }
     },
+    onError: (error) => {
+      toast.error("Error", {
+        description: error.message,
+        richColors: true,
+      });
+    },
   });
 
   const archiveTodo = api.todo.archiveTodo.useMutation({
@@ -111,6 +117,12 @@ export default function Todo({
 
         posthog.capture("todo-unarchived", { id: todo.id });
       }
+    },
+    onError: (error) => {
+      toast.error("Error", {
+        description: error.message,
+        richColors: true,
+      });
     },
   });
 
@@ -145,6 +157,12 @@ export default function Todo({
         posthog.capture("todo-unremoved", { id: todo.id });
       }
     },
+    onError: (error) => {
+      toast.error("Error", {
+        description: error.message,
+        richColors: true,
+      });
+    },
   });
 
   const deleteTodo = api.todo.deleteTodo.useMutation({
@@ -157,6 +175,12 @@ export default function Todo({
       });
 
       posthog.capture("todo-deleted", { id: todo.id });
+    },
+    onError: (error) => {
+      toast.error("Error", {
+        description: error.message,
+        richColors: true,
+      });
     },
   });
 

@@ -4,6 +4,29 @@ import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { todos } from "~/server/db/schema";
+import { SlidingWindowRateLimiter } from "~/server/redis/rate-limiter";
+
+async function todoRateLimiter(
+  identifier: string,
+  bucket: string,
+  limit: number,
+  duration: number,
+) {
+  const rateLimiter = new SlidingWindowRateLimiter({
+    bucket: bucket,
+    maxRequests: limit,
+    windowSizeInSeconds: duration,
+  });
+
+  const { allowed, retryAfterMs } = await rateLimiter.isAllowed(identifier);
+
+  if (!allowed) {
+    throw new TRPCError({
+      code: "TOO_MANY_REQUESTS",
+      message: `Please wait ${(retryAfterMs! / 1000).toFixed(1)}s before trying again.`,
+    });
+  }
+}
 
 export const todoRouter = createTRPCRouter({
   getTodos: protectedProcedure
@@ -79,6 +102,8 @@ export const todoRouter = createTRPCRouter({
       z.object({ name: z.string().min(1), description: z.string().optional() }),
     )
     .mutation(async ({ ctx, input }) => {
+      await todoRateLimiter(ctx.auth.userId, "todo-create", 50, 60); // 50 requests per minute
+
       await ctx.db.insert(todos).values({
         name: input.name,
         description: input.description,
@@ -91,6 +116,8 @@ export const todoRouter = createTRPCRouter({
   deleteTodo: protectedProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {
+      await todoRateLimiter(ctx.auth.userId, "todo-delete", 50, 60); // 50 requests per minute
+
       await ctx.db
         .delete(todos)
         .where(
@@ -103,6 +130,8 @@ export const todoRouter = createTRPCRouter({
   completeTodo: protectedProcedure
     .input(z.object({ id: z.number(), isCompleted: z.boolean() }))
     .mutation(async ({ ctx, input }) => {
+      await todoRateLimiter(ctx.auth.userId, "todo-complete", 100, 60); // 100 requests per minute
+
       await ctx.db
         .update(todos)
         .set({ isCompleted: input.isCompleted })
@@ -116,6 +145,8 @@ export const todoRouter = createTRPCRouter({
   archiveTodo: protectedProcedure
     .input(z.object({ id: z.number(), isArchived: z.boolean() }))
     .mutation(async ({ ctx, input }) => {
+      await todoRateLimiter(ctx.auth.userId, "todo-archive", 50, 60); // 50 requests per minute
+
       if (input.isArchived) {
         await ctx.db
           .update(todos)
@@ -138,6 +169,8 @@ export const todoRouter = createTRPCRouter({
   removeTodo: protectedProcedure
     .input(z.object({ id: z.number(), isRemoved: z.boolean() }))
     .mutation(async ({ ctx, input }) => {
+      await todoRateLimiter(ctx.auth.userId, "todo-remove", 50, 60); // 50 requests per minute
+
       if (input.isRemoved) {
         await ctx.db
           .update(todos)
@@ -206,6 +239,8 @@ export const todoRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      await todoRateLimiter(ctx.auth.userId, "todo-update", 50, 60); // 50 requests per minute
+
       await ctx.db
         .update(todos)
         .set({ name: input.name, description: input.description })

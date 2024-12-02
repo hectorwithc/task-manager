@@ -146,7 +146,7 @@ export default function CreateTodo({
                 )}
               />
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading && <Loader2 className="animate-spin"/>}
+                {isLoading && <Loader2 className="animate-spin" />}
                 Create
               </Button>
             </form>
