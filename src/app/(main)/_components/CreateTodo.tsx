@@ -27,6 +27,7 @@ import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
 import { toast } from "sonner";
 import posthog from "posthog-js";
+import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -54,12 +55,19 @@ export default function CreateTodo({
   });
 
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     createTodo.mutate(values);
   }
 
   const createTodo = api.todo.createTodo.useMutation({
+    onMutate: () => {
+      setIsLoading(true);
+    },
+    onSettled: () => {
+      setIsLoading(false);
+    },
     onSuccess: () => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       todos.refetch();
@@ -76,6 +84,12 @@ export default function CreateTodo({
       form.reset();
 
       setIsOpen(false);
+    },
+    onError: (error) => {
+      toast.error("Error", {
+        description: error.message,
+        richColors: true,
+      });
     },
   });
 
@@ -131,7 +145,8 @@ export default function CreateTodo({
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full">
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading && <Loader2 className="animate-spin"/>}
                 Create
               </Button>
             </form>
