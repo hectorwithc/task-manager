@@ -34,6 +34,9 @@ const sentryConfig = withSentryConfig(config, {
   // Hides source maps from generated client bundles
   hideSourceMaps: true,
 
+  // Disable telemetry data stuff
+  telemetry: false,
+
   // Automatically tree-shake Sentry logger statements to reduce bundle size
   disableLogger: true,
 
