@@ -126,6 +126,12 @@ export default function TodoList({ type }: { type: TodoCategoryType }) {
                   todo={todo}
                   todoCategoryType={type}
                   startComplete={() => {
+                    if (
+                      todo.todoState === "ARCHIVED" ||
+                      todo.todoState === "DELETED"
+                    )
+                      return;
+
                     setCompletedTodosCount(completedTodosCount + 1);
                     setUncompletedTodosCount(uncompletedTodosCount - 1);
                   }}
@@ -135,6 +141,12 @@ export default function TodoList({ type }: { type: TodoCategoryType }) {
                     removeTodoFromList(todo.id);
                   }}
                   startUnComplete={() => {
+                    if (
+                      todo.todoState === "ARCHIVED" ||
+                      todo.todoState === "DELETED"
+                    )
+                      return;
+
                     setUncompletedTodosCount(uncompletedTodosCount + 1);
                     setCompletedTodosCount(completedTodosCount - 1);
                   }}
@@ -170,6 +182,8 @@ export default function TodoList({ type }: { type: TodoCategoryType }) {
                     removeTodoFromList(todo.id);
                   }}
                   startRemove={() => {
+                    if (todo.todoState === "ARCHIVED") return;
+
                     setAllTodosCount(allTodosCount - 1);
 
                     if (todo.isCompleted) {
@@ -182,6 +196,8 @@ export default function TodoList({ type }: { type: TodoCategoryType }) {
                     removeTodoFromList(todo.id);
                   }}
                   startUnRemove={() => {
+                    if (todo.todoState === "ARCHIVED") return;
+
                     setAllTodosCount(allTodosCount + 1);
 
                     if (todo.isCompleted) {

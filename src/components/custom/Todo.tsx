@@ -208,23 +208,38 @@ export default function Todo({
       <div className="flex items-center justify-center space-x-1">
         {todoCategoryType !== "deleted" ? (
           <>
-            <Button
-              onClick={() => {
-                archiveTodo.mutate({
-                  id: todo.id,
-                  isArchived: !isArchived,
-                });
-              }}
-              size={"icon"}
-              variant={isArchived ? "secondary" : "ghost"}
-            >
-              {isArchived ? <ArchiveRestore /> : <Archive />}
-            </Button>
+            {todoCategoryType === "archived" ? (
+              <Button
+                onClick={() => {
+                  archiveTodo.mutate({
+                    id: todo.id,
+                    isArchived: false,
+                  });
+                }}
+                size={"icon"}
+                variant={isArchived ? "secondary" : "ghost"}
+              >
+                {isArchived ? <ArchiveRestore /> : <Archive />}
+              </Button>
+            ) : (
+              <Button
+                onClick={() => {
+                  archiveTodo.mutate({
+                    id: todo.id,
+                    isArchived: true,
+                  });
+                }}
+                size={"icon"}
+                variant={isArchived ? "secondary" : "ghost"}
+              >
+                {isArchived ? <ArchiveRestore /> : <Archive />}
+              </Button>
+            )}
             <Button
               onClick={() => {
                 removeTodo.mutate({
                   id: todo.id,
-                  isRemoved: !isRemoved,
+                  isRemoved: true,
                 });
               }}
               size={"icon"}
@@ -239,7 +254,7 @@ export default function Todo({
               onClick={() => {
                 removeTodo.mutate({
                   id: todo.id,
-                  isRemoved: !isRemoved,
+                  isRemoved: false,
                 });
               }}
               size={"icon"}
