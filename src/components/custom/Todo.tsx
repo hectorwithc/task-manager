@@ -14,21 +14,33 @@ import posthog from "posthog-js";
 export default function Todo({
   todo,
   todoCategoryType,
+  startComplete,
   onComplete,
+  startUnComplete,
   onUnComplete,
+  startArchive,
   onArchive,
+  startUnArchive,
   onUnArchive,
+  startRemove,
   onRemove,
+  startUnRemove,
   onUnRemove,
   onDelete,
 }: {
   todo: InferSelectModel<typeof todos>;
   todoCategoryType: TodoCategoryType;
+  startComplete: () => void;
   onComplete: () => void;
+  startUnComplete: () => void;
   onUnComplete: () => void;
+  startArchive: () => void;
   onArchive: () => void;
+  startUnArchive: () => void;
   onUnArchive: () => void;
+  startRemove: () => void;
   onRemove: () => void;
+  startUnRemove: () => void;
   onUnRemove: () => void;
   onDelete: () => void;
 }) {
@@ -39,6 +51,12 @@ export default function Todo({
   const completeTodo = api.todo.completeTodo.useMutation({
     onMutate: ({ isCompleted }) => {
       setisCompleted(isCompleted);
+
+      if (isCompleted) {
+        startComplete();
+      } else {
+        startUnComplete();
+      }
     },
     onSuccess: ({ completed }) => {
       if (completed) {
@@ -66,6 +84,12 @@ export default function Todo({
   const archiveTodo = api.todo.archiveTodo.useMutation({
     onMutate: ({ isArchived }) => {
       setIsArchived(isArchived);
+
+      if (isArchived) {
+        startArchive();
+      } else {
+        startUnArchive();
+      }
     },
     onSuccess: ({ archived }) => {
       if (archived) {
@@ -93,6 +117,12 @@ export default function Todo({
   const removeTodo = api.todo.removeTodo.useMutation({
     onMutate: ({ isRemoved }) => {
       setIsRemoved(isRemoved);
+
+      if (isRemoved) {
+        startRemove();
+      } else {
+        startUnRemove();
+      }
     },
     onSuccess: ({ removed }) => {
       if (removed) {
