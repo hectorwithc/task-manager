@@ -108,7 +108,10 @@ export default function TodoList({ type }: { type: TodoCategoryType }) {
           </Button>
         </div>
         <div className="mx-2 md:mx-0">
-          <CreateTodo todos={todos} />
+          <CreateTodo onCreateTodo={() => {
+            setAllTodosCount(allTodosCount + 1);
+            setUncompletedTodosCount(uncompletedTodosCount + 1);
+          }} todos={todos}/>
         </div>
       </div>
       <div className="mt-4">

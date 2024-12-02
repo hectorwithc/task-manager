@@ -38,10 +38,12 @@ const formSchema = z.object({
 export default function CreateTodo({
   todos,
   className,
+  onCreateTodo,
 }: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   todos: any;
   className?: string;
+  onCreateTodo: () => void;
 }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -62,12 +64,16 @@ export default function CreateTodo({
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       todos.refetch();
 
+      onCreateTodo();
+
       toast.success("Todo created", {
         description: "Todo created successfully",
         richColors: true,
       });
 
       posthog.capture("todo-created");
+
+      form.reset();
 
       setIsOpen(false);
     },
