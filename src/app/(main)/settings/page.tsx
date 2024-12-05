@@ -22,7 +22,7 @@ export default async function Page() {
         <CardContent className="space-y-1">
           <div className="flex items-center space-x-2">
             <p className="font-semibold text-muted-foreground">User ID: </p>
-            <p>{user?.id}</p>
+            <p className="overflow-x-scroll md:overflow-x-clip">{user?.id}</p>
           </div>
           <div className="flex items-center space-x-2">
             <p className="font-semibold text-muted-foreground">Theme: </p>

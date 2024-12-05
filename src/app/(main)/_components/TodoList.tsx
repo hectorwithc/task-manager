@@ -9,7 +9,6 @@ import { type todos as todosSchema } from "~/server/db/schema";
 import { type InferSelectModel } from "drizzle-orm";
 import { useEffect, useState } from "react";
 import { TodoListDropdownMenu } from "./TodoListDropdownMenu";
-import { useRouter } from "next/navigation";
 import PagnationComponent from "~/components/custom/PagnationComponent";
 
 export type TodoCategoryType =
@@ -39,13 +38,12 @@ export default function TodoList({
   type: TodoCategoryType;
   startingPage: number;
 }) {
-  const router = useRouter();
-
-  const [page, setPage] = useState(startingPage);
+  const utils = api.useUtils();
+  const [loadingData, setLoadingData] = useState(false);
 
   const todos = api.todo.getTodos.useQuery({
     type: type,
-    page: page,
+    page: startingPage,
     pageSize: 10,
   });
   const [todosData, setTodosData] = useState<
@@ -68,11 +66,13 @@ export default function TodoList({
     setCompletedTodosCount(countTodos.data?.completed[0]?.count ?? 0);
   }, [countTodos.data]);
 
+  /*
   function selectTodo(input: TodoCategoryType) {
     if (input === type) return;
 
     window.location.href = `/?type=${input}`;
   }
+  */
 
   /*
   function removeTodoFromList(id: number) {
@@ -82,12 +82,48 @@ export default function TodoList({
   }
   */
 
-  function handlePageChange(input: number) {
+  async function handleTodoCategoryChange(input: TodoCategoryType) {
+    if (loadingData) return;
+
+    window.history.pushState(
+      null,
+      "",
+      new URL(`/?type=${input}&page=1`, window.location.href),
+    );
+
+    setLoadingData(true);
+
+    const data = await utils.client.todo.getTodos.query({
+      type: input,
+      pageSize: 10,
+      page: 1,
+    });
+    setTodosData(data);
+
+    setLoadingData(false);
+  }
+
+  async function handlePageChange(input: number) {
     if (input < 1) return;
 
-    setPage(input);
+    if (loadingData) return;
 
-    router.push(`/?type=${type}&page=${input}`);
+    window.history.pushState(
+      null,
+      "",
+      new URL(`/?type=${type}&page=${input}`, window.location.href),
+    );
+
+    setLoadingData(true);
+
+    const data = await utils.client.todo.getTodos.query({
+      type: type,
+      pageSize: 10,
+      page: input,
+    });
+    setTodosData(data);
+
+    setLoadingData(false);
   }
 
   return (
@@ -99,36 +135,37 @@ export default function TodoList({
             allTodosCount={allTodosCount}
             uncompletedTodosCount={uncompletedTodosCount}
             completedTodosCount={completedTodosCount}
+            onTodoCategoryChange={handleTodoCategoryChange}
           />
         </div>
         <div className="hidden space-x-1 md:flex">
           <Button
             variant={type === "all" ? "secondary" : "ghost"}
-            onClick={() => selectTodo("all")}
+            onClick={() => handleTodoCategoryChange("all")}
           >
             All ({allTodosCount})
           </Button>
           <Button
             variant={type === "uncompleted" ? "secondary" : "ghost"}
-            onClick={() => selectTodo("uncompleted")}
+            onClick={() => handleTodoCategoryChange("uncompleted")}
           >
             Uncompleted ({uncompletedTodosCount})
           </Button>
           <Button
             variant={type === "completed" ? "secondary" : "ghost"}
-            onClick={() => selectTodo("completed")}
+            onClick={() => handleTodoCategoryChange("completed")}
           >
             Completed ({completedTodosCount})
           </Button>
           <Button
             variant={type === "archived" ? "secondary" : "ghost"}
-            onClick={() => selectTodo("archived")}
+            onClick={() => handleTodoCategoryChange("archived")}
           >
             Archived
           </Button>
           <Button
             variant={type === "deleted" ? "secondary" : "ghost"}
-            onClick={() => selectTodo("deleted")}
+            onClick={() => handleTodoCategoryChange("deleted")}
           >
             Deleted
           </Button>
@@ -145,7 +182,7 @@ export default function TodoList({
         </div>
       </div>
       <div className="mt-4">
-        {!todos.isLoading ? (
+        {!todos.isLoading && !loadingData ? (
           <div className="mx-2 flex flex-col space-y-2 md:mx-0">
             {todosData?.map((todo) => (
               <div key={todo.id}>
@@ -280,7 +317,7 @@ export default function TodoList({
           </div>
         )}
       </div>
-      <div className="mt-4">
+      <div className="py-4">
         <PagnationComponent
           startingPage={startingPage}
           pages={10}

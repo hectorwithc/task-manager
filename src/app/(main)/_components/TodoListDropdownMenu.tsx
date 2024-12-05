@@ -19,18 +19,18 @@ export function TodoListDropdownMenu({
   allTodosCount,
   uncompletedTodosCount,
   completedTodosCount,
+  onTodoCategoryChange,
 }: {
   todoCategoryType: TodoCategoryType;
   allTodosCount: number;
   uncompletedTodosCount: number;
   completedTodosCount: number;
+  onTodoCategoryChange: (input: TodoCategoryType) => void;
 }) {
   const [position, setPosition] = React.useState(todoCategoryType.toString());
 
   function selectTodo(input: TodoCategoryType) {
-    if (input === todoCategoryType) return;
-
-    window.location.href = `/?type=${input}`;
+    onTodoCategoryChange(input);
   }
 
   return (

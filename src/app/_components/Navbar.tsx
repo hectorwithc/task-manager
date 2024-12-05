@@ -1,8 +1,8 @@
 import { UserButton } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
-import AppLogo from "~/components/custom/AppLogo";
 import { Button } from "~/components/ui/button";
+import NavbarButtons from "./NavbarButtons";
 
 export default async function Navbar() {
   const session = await auth();
@@ -10,14 +10,7 @@ export default async function Navbar() {
   return (
     <div className="mb-8 flex items-center justify-between border-b-2 px-2 py-3">
       <div className="flex items-center justify-center">
-        <Link href={"/"}>
-          <AppLogo />
-        </Link>
-        <Link href={"/"}>
-          <Button size={"sm"} variant={"link"}>
-            Todos
-          </Button>
-        </Link>
+        <NavbarButtons />
         <Link href={"/settings"}>
           <Button size={"sm"} variant={"link"}>
             Settings

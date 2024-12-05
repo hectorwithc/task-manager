@@ -18,7 +18,7 @@ export default function PaginationComponent({
   handlePageChange: (input: number) => void;
 }) {
   // Calculate the number of buttons to show
-  const maxVisiblePages = 5; // Show up to 3 buttons
+  const maxVisiblePages = 3; // Show up to 3 buttons
   const pageNumbers = [];
 
   let startPage = Math.max(1, startingPage - Math.floor(maxVisiblePages / 2));
