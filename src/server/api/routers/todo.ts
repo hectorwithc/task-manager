@@ -45,7 +45,8 @@ export const todoRouter = createTRPCRouter({
           "archived",
           "deleted",
         ]),
-        limit: z.number().optional(),
+        page: z.number(),
+        pageSize: z.number(),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -59,6 +60,8 @@ export const todoRouter = createTRPCRouter({
               eq(model.todoState, "DEFAULT"),
             ),
           orderBy: (model) => desc(model.createdAt),
+          limit: input.pageSize,
+          offset: (input.page - 1) * input.pageSize,
         });
       } else if (input.type === "uncompleted") {
         todos = await ctx.db.query.todos.findMany({
@@ -69,6 +72,8 @@ export const todoRouter = createTRPCRouter({
               eq(model.todoState, "DEFAULT"),
             ),
           orderBy: (model) => desc(model.createdAt),
+          limit: input.pageSize,
+          offset: (input.page - 1) * input.pageSize,
         });
       } else if (input.type === "completed") {
         todos = await ctx.db.query.todos.findMany({
@@ -79,6 +84,8 @@ export const todoRouter = createTRPCRouter({
               eq(model.todoState, "DEFAULT"),
             ),
           orderBy: (model) => desc(model.createdAt),
+          limit: input.pageSize,
+          offset: (input.page - 1) * input.pageSize,
         });
       } else if (input.type === "archived") {
         todos = await ctx.db.query.todos.findMany({
@@ -88,6 +95,8 @@ export const todoRouter = createTRPCRouter({
               eq(model.todoState, "ARCHIVED"),
             ),
           orderBy: (model) => desc(model.createdAt),
+          limit: input.pageSize,
+          offset: (input.page - 1) * input.pageSize,
         });
       } else if (input.type === "deleted") {
         todos = await ctx.db.query.todos.findMany({
@@ -97,6 +106,8 @@ export const todoRouter = createTRPCRouter({
               eq(model.todoState, "DELETED"),
             ),
           orderBy: (model) => desc(model.createdAt),
+          limit: input.pageSize,
+          offset: (input.page - 1) * input.pageSize,
         });
       }
 

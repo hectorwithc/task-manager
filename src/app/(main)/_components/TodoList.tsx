@@ -9,6 +9,8 @@ import { type todos as todosSchema } from "~/server/db/schema";
 import { type InferSelectModel } from "drizzle-orm";
 import { useEffect, useState } from "react";
 import { TodoListDropdownMenu } from "./TodoListDropdownMenu";
+import { useRouter } from "next/navigation";
+import PagnationComponent from "~/components/custom/PagnationComponent";
 
 export type TodoCategoryType =
   | "all"
@@ -30,8 +32,22 @@ export function toTodoCategoryType(input: string): TodoCategoryType {
     : "all";
 }
 
-export default function TodoList({ type }: { type: TodoCategoryType }) {
-  const todos = api.todo.getTodos.useQuery({ type: type });
+export default function TodoList({
+  type,
+  startingPage,
+}: {
+  type: TodoCategoryType;
+  startingPage: number;
+}) {
+  const router = useRouter();
+
+  const [page, setPage] = useState(startingPage);
+
+  const todos = api.todo.getTodos.useQuery({
+    type: type,
+    page: page,
+    pageSize: 10,
+  });
   const [todosData, setTodosData] = useState<
     InferSelectModel<typeof todosSchema>[] | undefined
   >([]);
@@ -58,10 +74,20 @@ export default function TodoList({ type }: { type: TodoCategoryType }) {
     window.location.href = `/?type=${input}`;
   }
 
+  /*
   function removeTodoFromList(id: number) {
     const updatedTodos = todosData?.filter((todo) => todo.id !== id);
 
     setTodosData(updatedTodos);
+  }
+  */
+
+  function handlePageChange(input: number) {
+    if (input < 1) return;
+
+    setPage(input);
+
+    router.push(`/?type=${type}&page=${input}`);
   }
 
   return (
@@ -110,10 +136,11 @@ export default function TodoList({ type }: { type: TodoCategoryType }) {
         <div className="mx-2 md:mx-0">
           <CreateTodo
             onCreateTodo={() => {
+              void todos.refetch();
+
               setAllTodosCount(allTodosCount + 1);
               setUncompletedTodosCount(uncompletedTodosCount + 1);
             }}
-            todos={todos}
           />
         </div>
       </div>
@@ -138,7 +165,9 @@ export default function TodoList({ type }: { type: TodoCategoryType }) {
                   onComplete={() => {
                     if (type !== "uncompleted") return;
 
-                    removeTodoFromList(todo.id);
+                    void todos.refetch();
+
+                    //removeTodoFromList(todo.id);
                   }}
                   startUnComplete={() => {
                     if (
@@ -153,7 +182,9 @@ export default function TodoList({ type }: { type: TodoCategoryType }) {
                   onUnComplete={() => {
                     if (type !== "completed") return;
 
-                    removeTodoFromList(todo.id);
+                    void todos.refetch();
+
+                    //removeTodoFromList(todo.id);
                   }}
                   startArchive={() => {
                     setAllTodosCount(allTodosCount - 1);
@@ -165,7 +196,9 @@ export default function TodoList({ type }: { type: TodoCategoryType }) {
                     }
                   }}
                   onArchive={() => {
-                    removeTodoFromList(todo.id);
+                    void todos.refetch();
+
+                    //removeTodoFromList(todo.id);
                   }}
                   startUnArchive={() => {
                     setAllTodosCount(allTodosCount + 1);
@@ -179,7 +212,9 @@ export default function TodoList({ type }: { type: TodoCategoryType }) {
                   onUnArchive={() => {
                     if (type !== "archived") return;
 
-                    removeTodoFromList(todo.id);
+                    void todos.refetch();
+
+                    //removeTodoFromList(todo.id);
                   }}
                   startRemove={() => {
                     if (todo.todoState === "ARCHIVED") return;
@@ -193,7 +228,9 @@ export default function TodoList({ type }: { type: TodoCategoryType }) {
                     }
                   }}
                   onRemove={() => {
-                    removeTodoFromList(todo.id);
+                    void todos.refetch();
+
+                    //removeTodoFromList(todo.id);
                   }}
                   startUnRemove={() => {
                     if (todo.todoState === "ARCHIVED") return;
@@ -209,10 +246,14 @@ export default function TodoList({ type }: { type: TodoCategoryType }) {
                   onUnRemove={() => {
                     if (type !== "deleted") return;
 
-                    removeTodoFromList(todo.id);
+                    void todos.refetch();
+
+                    //removeTodoFromList(todo.id);
                   }}
                   onDelete={() => {
-                    removeTodoFromList(todo.id);
+                    void todos.refetch();
+
+                    //removeTodoFromList(todo.id);
                   }}
                 />
               </div>
@@ -238,6 +279,13 @@ export default function TodoList({ type }: { type: TodoCategoryType }) {
             ))}
           </div>
         )}
+      </div>
+      <div className="mt-4">
+        <PagnationComponent
+          startingPage={startingPage}
+          pages={10}
+          handlePageChange={handlePageChange}
+        />
       </div>
     </div>
   );

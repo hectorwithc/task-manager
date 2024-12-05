@@ -8,13 +8,15 @@ import { useSearchParams } from "next/navigation";
 
 export default function Page() {
   const searchParams = useSearchParams();
+
   const selectedTodoType: TodoCategoryType = toTodoCategoryType(
     searchParams.get("type") as unknown as string,
   );
+  const selectedPage = parseInt(searchParams.get("page") ?? "1");
 
   return (
     <main>
-      <TodoList type={selectedTodoType} />
+      <TodoList startingPage={selectedPage} type={selectedTodoType} />
     </main>
   );
 }

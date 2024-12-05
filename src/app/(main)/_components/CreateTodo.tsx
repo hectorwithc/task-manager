@@ -37,12 +37,9 @@ const formSchema = z.object({
 });
 
 export default function CreateTodo({
-  todos,
   className,
   onCreateTodo,
 }: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  todos: any;
   className?: string;
   onCreateTodo: () => void;
 }) {
@@ -69,9 +66,6 @@ export default function CreateTodo({
       setIsLoading(false);
     },
     onSuccess: () => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-      todos.refetch();
-
       onCreateTodo();
 
       toast.success("Todo created", {
