@@ -320,7 +320,7 @@ export default function TodoList({
       <div className="py-4">
         <PagnationComponent
           startingPage={startingPage}
-          pages={10}
+          pages={1000}
           handlePageChange={handlePageChange}
         />
       </div>
